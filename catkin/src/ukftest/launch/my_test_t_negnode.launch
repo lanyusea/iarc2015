@@ -1,0 +1,33 @@
+<launch>
+	<!-- Camera parameters -->
+	<param name="set_gain" value="40" />
+	<param name="set_exposure" value="15000" />
+	<param name="set_height" value="240" />
+	<param name="set_width" value="320" />
+	<param name="set_bright" value="10" />
+	<node name="ASIRead" pkg="read_web_cam" type="ASIRead"/> 
+
+
+	<!-- T -->
+	<node name="neg_T_test_node" pkg="ukftest" type="neg_T_test_node"/> 
+
+	<!-- ctrl -->
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+	<node name="neg_estimation_node" pkg="ukftest" type="neg_estimation_node" />
+
+	<node name="uav_neg_controller_node" pkg="ukftest" type="uav_neg_controller_node" output="screen"/>
+	<!-- PID parameters -->
+	<param name="Kp_pos" value="1.0" />
+	<param name="Ki_pos" value="0.0" />
+	<param name="Kd_pos" value="0.0" />
+
+	<param name="Kp_vel" value="1.50" />
+	<param name="Ki_vel" value="0.20" />
+	<param name="Kd_vel" value="0.34" />
+
+	<param name="pid_gain" value="1.0" />
+	<param name="controlLimit" value="3.0" />
+</launch>
+

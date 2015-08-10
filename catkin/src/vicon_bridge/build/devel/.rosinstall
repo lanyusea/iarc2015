@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/yingjh/catkin_ws/src/vicon_bridge/build/devel/setup.sh

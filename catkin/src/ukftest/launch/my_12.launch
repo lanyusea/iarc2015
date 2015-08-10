@@ -1,0 +1,65 @@
+<launch>
+	<param name="is_debug_on" value="false" />
+
+	<node name="odom_estimation_node" pkg="ukftest" type="odom_estimation_node"/>
+
+	<!-- Camera parameters -->
+	<param name="set_gain" value="40" />
+	<param name="set_exposure" value="17000" />
+	<param name="set_height" value="240" />
+	<param name="set_width" value="320" />
+	<param name="set_bright" value="10" />
+	<node name="ASIRead" pkg="read_web_cam" type="ASIRead"/>
+
+	<param name="markerSize" value="19.05" />  
+	<!-- <param name="markerSize" value="12.83" />  marker on the small table -->
+	<node name="aruco_tracker" pkg="irobot_tracker" type="aruco_tracker"/>
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+	<node name="uav_controller_node" pkg="ukftest" type="uav_controller_node" output="screen"/>
+    <!-- KF parameters -->
+	<param name="UKF_posStd_r" value="10" /> <!-- processs errorCov -->
+	<param name="UKF_ortStd_r" value="5" /> <!-- processs errorCov -->
+	<param name="UKF_imuStd_r" value="1" /> <!-- processs errorCov -->
+
+	<param name="UKF_posStd_q" value="2" />
+	<param name="UKF_ortStd_q" value="0.8" />
+	<param name="UKF_imuStd_q" value="5" />
+
+	<!-- PID parameters -->
+	<param name="Kp_pos" value="0.90" />
+	<param name="Ki_pos" value="0.10" />
+	<param name="Kd_pos" value="0.005" />
+
+	<param name="Kp_vel" value="2.50" />
+	<param name="Ki_vel" value="0.10" />
+	<param name="Kd_vel" value="0.10" />
+
+	<param name="Kp_pos_y" value="0.9" />
+	<param name="Ki_pos_y" value="0.1" />
+	<param name="Kd_pos_y" value="0.01" />
+
+	<param name="Kp_vel_y" value="2.5" />
+	<param name="Ki_vel_y" value="0.10" />
+	<param name="Kd_vel_y" value="0.34" />
+	
+        <param name="Kp_pos_z" value="0.0100" />
+        <param name="Ki_pos_z" value="0.0001" />
+        <param name="Kd_pos_z" value="0.0010" />
+
+        <param name="Kp_yaw" value="0.800" />
+        <param name="Ki_yaw" value="0.050" />
+        <param name="Kd_yaw" value="1.000" />
+
+	
+
+	<param name="pid_gain" value="1.0" />
+	<param name="controlLimit" value="5.0" />
+	<param name="controlLimitVel" value="0.15" />
+	<param name="controlLimitYawrate" value="10.0" />
+	
+</launch>
+
+

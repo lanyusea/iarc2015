@@ -1,0 +1,27 @@
+<launch>
+	<node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode">
+	<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+	<param name="serial_baudrate"     type="int"    value="115200"/>
+	<param name="frame_id"            type="string" value="laser"/>
+	<param name="inverted"            type="bool"   value="true"/>
+	<param name="angle_compensate"    type="bool"   value="true"/>
+	</node>
+	
+	<node name="my_vfh_4rp_node" pkg="ukftest" type="my_vfh_4rp_node" />
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+	<node name="uav_avoid_neg_controller_node" pkg="ukftest" type="uav_avoid_neg_controller_node" />
+	<!-- Avoiding PID parameters -->
+	<param name="Kp_avoid_vel" value="2.5" />
+	<param name="Ki_avoid_vel" value="0.0" />
+	<param name="Kd_avoid_vel" value="0.05" />
+	<param name="pid_gain_avoid" value="1.0" />
+	<param name="controlLimit_avoid" value="30.0" />
+
+	<node name="uav_state2_controller_node" pkg="ukftest" type="uav_state2_controller_node" output="screen" />
+	<!-- status parameters -->
+	<param name="yaw_rate" value="0.0" />
+	
+</launch>

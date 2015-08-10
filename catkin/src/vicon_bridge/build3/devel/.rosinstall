@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/aqua/iarc/catkin/src/vicon_bridge/build3/devel/setup.sh

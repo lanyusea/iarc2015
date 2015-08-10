@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -O2 -g -DNDEBUG   -shared -Wl,-soname,libgtest.so -o /home/aqua/iarc/catkin/src/vicon_bridge/lib/libgtest.so CMakeFiles/gtest.dir/src/gtest-all.cc.o  -L/opt/ros/indigo/lib  -L/home/aqua/iarc/catkin/src/vicon_bridge/build3/gtest/src -lpthread -Wl,-rpath,/opt/ros/indigo/lib:/home/aqua/iarc/catkin/src/vicon_bridge/build3/gtest/src 

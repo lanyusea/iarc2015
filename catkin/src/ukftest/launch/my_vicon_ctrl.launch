@@ -1,0 +1,7 @@
+<launch>
+	<!-- <vicon controller node> -->
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+</launch>
+
+

@@ -1,0 +1,51 @@
+<launch>
+	<!-- Camera parameters -->
+	<param name="set_gain" value="40" />
+	<param name="set_exposure" value="6000" />
+	<param name="set_height" value="240" />
+	<param name="set_width" value="320" />
+	<param name="set_bright" value="10" />
+	<node name="ASIReadcolor" pkg="read_web_cam" type="ASIReadcolor"/>
+
+	<node name="color_tracking_onxu_test_node" pkg="ukftest" type="color_tracking_onxu_test_node"/> 		
+
+	<node name="urg_node" pkg="urg_node" type="urg_node" />
+
+	<node name="my_vfh_v2_node" pkg="ukftest" type="my_vfh_v2_node" />
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node"  />
+	<param name="is_write_on" value="true" />
+	
+	<node name="neg_estimation_node" pkg="ukftest" type="neg_estimation_node" />
+
+	<node name="uav_avoid_neg_controller_node" pkg="ukftest" type="uav_avoid_neg_controller_node" />
+	<!-- Avoiding PID parameters -->
+
+	<param name="Kp_avoid_vel" value="2.5" />
+	<param name="Ki_avoid_vel" value="0.0" />
+	<param name="Kd_avoid_vel" value="0.2" />
+	<param name="pid_gain_avoid" value="1.0" />
+	<param name="controlLimit_avoid" value="25.0" />
+
+	
+	<node name="uav_track_neg_controller_node" pkg="ukftest" type="uav_track_neg_controller_node" />
+	<!-- Tracking PID parameters -->
+	<param name="Kp_pos" value="1.0" />
+	<param name="Ki_pos" value="0.0" />
+	<param name="Kd_pos" value="0.0" />
+	<param name="Kp_vel" value="1.20" />
+	<param name="Ki_vel" value="0.20" />
+	<param name="Kd_vel" value="0.34" />
+
+	<param name="pid_gain_track" value="1.0" />
+	<param name="controlLimit_track" value="2.0" />
+
+
+	<node name="uav_state_controller_node" pkg="ukftest" type="uav_state_controller_node"  output="screen"/>
+
+
+	
+	
+
+</launch>
+

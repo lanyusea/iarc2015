@@ -1,0 +1,14 @@
+<launch>
+	<!-- Camera parameters -->
+	<param name="set_gain" value="40" />
+	<param name="rate" value="120" />
+	<param name="set_exposure" value="10700" />
+	<param name="set_height" value="240" />
+	<param name="set_width" value="320" />
+	<param name="set_bright" value="10" />
+	<node name="ASIRead" pkg="read_web_cam" type="ASIRead"/>
+
+	<node name="irobot_tracker" pkg="irobot_tracker" type="webcam_tracker"/>
+</launch>
+
+

@@ -1,0 +1,7 @@
+<launch>
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+
+	<node name="reg_test_node" pkg="ukftest" type="reg_test_node" output="screen"/>
+</launch>
+
+

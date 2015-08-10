@@ -1,0 +1,33 @@
+<launch>
+	<param name="is_debug_on" value="true" />
+	<param name="freq" value="1.0" />
+	<node name="odom_estimation_node" pkg="ukftest" type="odom_estimation_node"/>
+
+	
+
+	<node name="Webcam" pkg="read_web_cam" type="read_web_cam"/>
+
+	<param name="markerSize" value="19.05" />
+	<node name="aruco_tracker" pkg="irobot_tracker" type="aruco_tracker" />
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+
+	<!-- PID parameters -->
+	<param name="Kp_pos" value="1.35" />
+	<param name="Ki_pos" value="0.00" />
+	<param name="Kd_pos" value="0.28" />
+
+	<param name="Kp_vel" value="1.80" />
+	<param name="Ki_vel" value="0.00" />
+	<param name="Kd_vel" value="0.28" />
+
+	<param name="Kp_acc" value="0.41" />
+	<param name="Ki_acc" value="0.0" />
+	<param name="Kd_acc" value="0.0" />
+
+	<param name="pid_gain" value="1.0" />
+	<param name="controlLimit" value="8.0" />
+
+	<node name="uav_controller_node" pkg="ukftest" type="uav_controller_node" output="screen"/>
+
+</launch>

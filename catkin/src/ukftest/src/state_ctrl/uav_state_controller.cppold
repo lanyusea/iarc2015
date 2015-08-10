@@ -1,0 +1,143 @@
+/************************************************************************
+* Copyright(c) 2014  YING Jiahang
+* All rights reserved.
+*
+* File:	uav_state_controller.cpp
+* Brief: 
+* Version: 1.0
+* Author: YING Jiahang
+* Email: yingjiahang@gmail.com
+* Date:	2014/7/25 22:00
+* History:
+************************************************************************/
+
+// ros
+#include "ros/ros.h"
+// msg
+#include <ukftest/avoidCtrl.h>
+#include <ukftest/trackCtrl.h>
+#include <geometry_msgs/Quaternion.h>
+
+using namespace std;
+using namespace ros;
+
+// Ros
+ros::Subscriber avoidsub,tracksub;
+ros::Publisher ctrlpub;
+
+ros::Timer stateTimer;
+
+
+//state msg
+bool isAvoid = false;
+int avoid_z, avoid_x, avoid_y, avoid_w;
+
+bool isTrack = false;
+int track_z, track_x, track_y, track_w;
+
+double freq;
+
+bool isDebug = true;
+// callback func
+void avoidCallback(const ukftest::avoidCtrl& avoidMsg);
+void trackCallback(const ukftest::trackCtrl& trackMsg);
+void spinCallback(const ros::TimerEvent& e);
+
+int main (int argc, char** argv)
+{
+	// ros init and parameters retrieve
+	ros::init(argc, argv, "uav_state_controller_node");
+	ros::NodeHandle nh;
+
+	ctrlpub = nh.advertise<geometry_msgs::Quaternion>("board_ctrl",10);
+
+	avoidsub = nh.subscribe("laser_ctrl", 10, avoidCallback);
+	tracksub = nh.subscribe("track_ctrl", 10, trackCallback);
+
+
+	nh.param("freq", freq, 30.0); 
+	stateTimer = nh.createTimer(ros::Duration(1.0/max(freq,1.0)), spinCallback);
+
+	cout<< "uav state controller start!"<<endl;
+	ros::spin();
+	cout<< "uav state controller shutdown!"<<endl;
+	return 0;
+}
+
+void avoidCallback(const ukftest::avoidCtrl& avoidMsg)
+{
+	if(avoidMsg.isBlocking == 1)
+	{
+		isAvoid = true;
+		avoid_z = avoidMsg.ctrl.z;	//yaw_rate 
+		avoid_x = avoidMsg.ctrl.x;	//pitch
+		avoid_y = avoidMsg.ctrl.y;	//roll
+		avoid_w = avoidMsg.ctrl.w;	//vel
+	}
+	else
+	{
+		isAvoid = false;
+		avoid_z = 0;	//yaw_rate 
+		avoid_x = 0;	//pitch
+		avoid_y = 0;	//roll
+		avoid_w = 0;	//vel
+	}
+}
+void trackCallback(const ukftest::trackCtrl& trackMsg)
+{
+	if(trackMsg.isTracking == 1)
+	{
+		isTrack = true;
+		track_z = trackMsg.ctrl.z;	//yaw_rate 
+		track_x = trackMsg.ctrl.x;	//pitch
+		track_y = trackMsg.ctrl.y;	//roll
+		track_w = trackMsg.ctrl.w;	//vel
+	}
+	else
+	{
+		isTrack = false;
+		track_z = 0;	//yaw_rate 
+		track_x = 0;	//pitch
+		track_y = 0;	//roll
+		track_w = 0;	//vel
+	}
+
+}
+
+void spinCallback(const ros::TimerEvent& e)
+{
+	geometry_msgs::Quaternion outMsg;
+	if(isAvoid)
+	{
+		outMsg.z = (int)avoid_z;         //yaw_rate  
+		outMsg.x = (int)avoid_x;         //pitch
+		outMsg.y = (int)avoid_y;         //roll
+		outMsg.w = (int)avoid_w;         //vel
+		cout<< "state: Avoiding!" <<endl;
+	}
+	else if(isTrack)
+	{
+		outMsg.z = (int)track_z;         //yaw_rate  
+		outMsg.x = (int)track_x;         //pitch
+		outMsg.y = (int)track_y;         //roll
+		outMsg.w = (int)track_w;         //vel
+		cout<< "state: Tracking!" <<endl;
+	}
+	else
+	{
+		outMsg.z = (int)(0);         //yaw_rate  
+		outMsg.x = (int)(0);         //pitch
+		outMsg.y = (int)(0);         //roll
+		outMsg.w = (int)(0);         //vel
+		cout<< "state: Hovering!" <<endl;
+	}
+	ctrlpub.publish(outMsg);
+	
+	if(isDebug)
+	{
+		cout<< "yaw rate  :" << outMsg.z << endl;
+		cout<< "pitch     :" << outMsg.x << endl;
+		cout<< "roll      :" << outMsg.y << endl;
+		cout<< "vel       :" << outMsg.w << endl;
+	}
+}

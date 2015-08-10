@@ -1,0 +1,11 @@
+<launch>
+	<!-- Camera parameters -->
+	<param name="set_gain" value="40" />
+	<param name="set_exposure" value="12000" />
+	<param name="set_height" value="240" />
+	<param name="set_width" value="320" />
+	<param name="set_bright" value="10" />
+	<node name="ASIRead" pkg="read_web_cam" type="ASIRead"/>
+
+	<node name="neg_cttracker_test_node" pkg="ukftest" type="neg_cttracker_test_node"/> 
+</launch>

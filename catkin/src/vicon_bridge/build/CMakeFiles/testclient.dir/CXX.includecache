@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../vicon_sdk/vicon_datastream_SDK_1.2.59611_x64/Client.h
+string
+-
+
+/home/yingjh/catkin_ws/src/vicon_bridge/src/ViconDataStreamSDK_CPPTest.cpp
+Client.h
+/home/yingjh/catkin_ws/src/vicon_bridge/src/Client.h
+iostream
+-
+conio.h
+-
+windows.h
+-
+

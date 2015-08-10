@@ -1,0 +1,17 @@
+<launch>
+	<node name="hokuyo_node" pkg="hokuyo_node" type="hokuyo_node"/>
+	<param name="calibrate_time" value="false" />
+	<param name="port" value="/dev/ttyACM0" />
+
+
+	<node name="my_vfh_test_node" pkg="ukftest" type="my_vfh_test_node" output="screen"/>
+
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+
+	<node name="laser_neg_estimation_node" pkg="ukftest" type="laser_neg_estimation_node"/>
+	
+	
+</launch>

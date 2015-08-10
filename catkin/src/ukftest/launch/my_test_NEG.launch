@@ -1,0 +1,10 @@
+<launch>
+	<node name="ASIRead" pkg="read_web_cam" type="ASIRead"/> 
+	<node name="neg_marker_test_node" pkg="ukftest" type="neg_marker_test_node"/> 
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	
+	<node name="neg_tracker_test" pkg="ukftest" type="neg_tracker_test" output="screen"/>
+</launch>
+
+

@@ -1,0 +1,19 @@
+<launch>
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+	<node name="uav_poticalflow_neg_controller_node" pkg="ukftest" type="uav_poticalflow_neg_controller_node"  />
+	<!-- Avoiding PID parameters -->
+	<param name="Kp_opticalflow_vel" value="2.5" />
+	<param name="Ki_opticalflow_vel" value="0.0" />
+	<param name="Kd_opticalflow_vel" value="0.05" />
+	<param name="pid_gain_avoid" value="1.0" />
+	<param name="controlLimit_opticalflow" value="30.0" />
+
+
+	<node name="uav_status_vicon_controller_node" pkg="ukftest" type="uav_status_vicon_controller_node" output="screen"/>
+	<!-- status parameters -->
+	<param name="yaw_rate" value="0.0" />
+
+</launch>
+

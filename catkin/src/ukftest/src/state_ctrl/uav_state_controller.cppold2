@@ -1,0 +1,222 @@
+/************************************************************************
+* Copyright(c) 2014  YING Jiahang
+* All rights reserved.
+*
+* File:	uav_state_controller.cpp
+* Brief: 
+* Version: 1.0
+* Author: YING Jiahang
+* Email: yingjiahang@gmail.com
+* Date:	2014/7/25 22:00
+* History:
+************************************************************************/
+
+// ros
+#include "ros/ros.h"
+// msg
+#include <ukftest/avoidCtrl.h>
+#include <ukftest/trackCtrl.h>
+#include <ukftest/randomCtrl.h>
+#include <geometry_msgs/Quaternion.h>
+#include <std_msgs/Float32.h>
+
+using namespace std;
+using namespace ros;
+
+// Ros
+ros::Subscriber avoidsub, tracksub, randomsub, landsub;
+ros::Publisher ctrlpub, statuspub , requestpub ;
+
+ros::Timer stateTimer;
+
+
+//state msg
+bool isAvoid = false;
+int avoid_z, avoid_x, avoid_y, avoid_w;
+
+bool isTrack = false;
+int track_z, track_x, track_y, track_w;
+
+bool isRandom = false;
+int random_z, random_x, random_y, random_w;
+
+bool isLand = false;
+
+
+double freq;
+
+bool isDebug = true;
+// callback func
+void avoidCallback(const ukftest::avoidCtrl& avoidMsg);
+void trackCallback(const ukftest::trackCtrl& trackMsg);
+void randomCallback(const ukftest::randomCtrl& randomMsg);
+void landCallback(const std_msgs::Float32& landMsg);
+
+void spinCallback(const ros::TimerEvent& e);
+
+int main (int argc, char** argv)
+{
+	// ros init and parameters retrieve
+	ros::init(argc, argv, "uav_state_controller_node");
+	ros::NodeHandle nh;
+
+	ctrlpub = nh.advertise<geometry_msgs::Quaternion>("board_ctrl",10);
+	statuspub = nh.advertise<std_msgs::Float32>("uav_flight_control_status",10);
+	requestpub = nh.advertise<std_msgs::Float32>("uav_flight_status_request",10);
+
+	avoidsub  = nh.subscribe("laser_ctrl" , 10, avoidCallback);
+	tracksub  = nh.subscribe("track_ctrl" , 10, trackCallback);
+	randomsub = nh.subscribe("random_ctrl", 10, randomCallback);
+	landsub   = nh.subscribe("landing_ctrl", 10, landCallback);
+
+	nh.param("freq", freq, 30.0); 
+	stateTimer = nh.createTimer(ros::Duration(1.0/max(freq,1.0)), spinCallback);
+
+	cout<< "uav state controller start!"<<endl;
+	ros::spin();
+	cout<< "uav state controller shutdown!"<<endl;
+	return 0;
+}
+
+void avoidCallback(const ukftest::avoidCtrl& avoidMsg)
+{
+	if(avoidMsg.isBlocking == 1)
+	{
+		isAvoid = true;
+		avoid_z = avoidMsg.ctrl.z;	//yaw_rate 
+		avoid_x = avoidMsg.ctrl.x;	//pitch
+		avoid_y = avoidMsg.ctrl.y;	//roll
+		avoid_w = avoidMsg.ctrl.w;	//vel
+	}
+	else
+	{
+		isAvoid = false;
+		avoid_z = 0;	//yaw_rate 
+		avoid_x = 0;	//pitch
+		avoid_y = 0;	//roll
+		avoid_w = 0;	//vel
+	}
+}
+
+void trackCallback(const ukftest::trackCtrl& trackMsg)
+{
+	if(trackMsg.isTracking == 1)
+	{
+		isTrack = true;
+		track_z = trackMsg.ctrl.z;	//yaw_rate 
+		track_x = trackMsg.ctrl.x;	//pitch
+		track_y = trackMsg.ctrl.y;	//roll
+		track_w = trackMsg.ctrl.w;	//vel
+	}
+	else
+	{
+		isTrack = false;
+		track_z = 0;	//yaw_rate 
+		track_x = 0;	//pitch
+		track_y = 0;	//roll
+		track_w = 0;	//vel
+	}
+
+}
+
+void randomCallback(const ukftest::randomCtrl& randomMsg)
+{
+	if(randomMsg.isRandflying == 1)
+	{
+		isRandom = true;
+		random_z = randomMsg.ctrl.z;	//yaw_rate 
+		random_x = randomMsg.ctrl.x;	//pitch
+		random_y = randomMsg.ctrl.y;	//roll
+		random_w = randomMsg.ctrl.w;	//vel
+	}
+	else
+	{
+		isRandom = false;
+		random_z = 0;	//yaw_rate 
+		random_x = 0;	//pitch
+		random_y = 0;	//roll
+		random_w = 0;	//vel
+	}
+
+}
+
+void landCallback(const std_msgs::Float32& landMsg)
+{
+	if(landMsg.data == 1)
+	{
+		isLand = true;
+	}
+	else
+	{
+		isLand = false;
+	}
+}
+
+void spinCallback(const ros::TimerEvent& e)
+{
+	geometry_msgs::Quaternion outMsg;
+	std_msgs::Float32 statusMsg;
+	std_msgs::Float32 requestMsg;
+	if(isAvoid)
+	{
+		outMsg.z = (int)avoid_z;         //yaw_rate  
+		outMsg.x = (int)avoid_x;         //pitch
+		outMsg.y = (int)avoid_y;         //roll
+		outMsg.w = (int)avoid_w;         //vel
+		cout<< "state: Avoiding!" <<endl;
+		statusMsg.data = 1.0;
+		statuspub.publish(statusMsg);
+	}
+	else if(isLand)
+	{
+		outMsg.z = (int)0;         //yaw_rate  
+		outMsg.x = (int)0;         //pitch
+		outMsg.y = (int)0;         //roll
+		outMsg.w = (int)0;         //vel
+		cout<< "state: Landing!" <<endl;
+		statusMsg.data = 5.0;
+		statuspub.publish(statusMsg);
+		requestMsg.data = 4.0;
+		requestpub.publish(requestMsg);
+		
+	}
+	else if(isTrack)
+	{
+		outMsg.z = (int)track_z;         //yaw_rate  
+		outMsg.x = (int)track_x;         //pitch
+		outMsg.y = (int)track_y;         //roll
+		outMsg.w = (int)track_w;         //vel
+		cout<< "state: Tracking!" <<endl;
+		statusMsg.data = 2.0;
+		statuspub.publish(statusMsg);
+	}
+	else if(isRandom)
+	{
+		outMsg.z = (int)random_z;         //yaw_rate  
+		outMsg.x = (int)random_x;         //pitch
+		outMsg.y = (int)random_y;         //roll
+		outMsg.w = (int)random_w;         //vel
+		cout<< "state: Rand-Flying!" <<endl;
+		statusMsg.data = 3.0;
+		statuspub.publish(statusMsg);
+	}
+	else 
+	{
+		outMsg.z = (int)(0);         //yaw_rate  
+		outMsg.x = (int)(0);         //pitch
+		outMsg.y = (int)(0);         //roll
+		outMsg.w = (int)(0);         //vel
+		cout<< "state: Hovering!" <<endl;
+		statusMsg.data = 4.0;
+		statuspub.publish(statusMsg);
+	}
+	ctrlpub.publish(outMsg);
+	
+	if(isDebug)
+	{
+		cout<< "yaw rate  :" << outMsg.z << endl;
+		cout<< "pitch     :" << outMsg.x << endl;
+		cout<< "roll      :" << outMsg.y << endl;
+		cout<< "vel       :" << outMsg.w << endl;
+	}
+}

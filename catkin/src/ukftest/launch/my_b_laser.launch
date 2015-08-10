@@ -1,0 +1,19 @@
+<launch>
+	<node name="hokuyo_node" pkg="hokuyo_node" type="hokuyo_node"/>
+	<param name="calibrate_time" value="false" />
+	<param name="port" value="/dev/ttyACM0" />
+
+
+	<node name="my_vfh_test_node" pkg="ukftest" type="my_vfh_test_node" output="screen"/>
+
+	<node name="serial_to_uav_node" pkg="serial_to_uav" type="serial_to_uav_node" />
+	<param name="is_write_on" value="true" />
+
+	<node name="uav_b_laser_controller_node" pkg="ukftest" type="uav_b_laser_controller_node" />
+	<!-- PID parameters -->
+
+	<param name="pid_gain" value="1.0" />
+	<param name="controlLimit" value="5.0" />
+</launch>
+
+
